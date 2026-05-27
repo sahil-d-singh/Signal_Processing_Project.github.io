@@ -1,0 +1,631 @@
+
+<h2 class="sr-only">Signal Processing Engineering Portfolio for a graduate student showcasing projects in rail fault detection, engine knock detection, EGT bracket fatigue analysis, and other DSP work. Includes project cards with tech stacks, metrics, and navigation.</h2>
+
+<style>
+:root{
+  --navy:#0B1926;--navy2:#0F2235;--navy3:#162F45;
+  --accent:#00C9A7;--accent2:#FF6B35;--accent3:#7C9EFF;
+  --text:#E8F2FF;--muted:#7B9BB5;--border:rgba(0,201,167,0.15);
+  --card-bg:rgba(15,34,53,0.9);
+  font-family:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--navy);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* Animated grid background */
+.bg-grid{position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:
+    linear-gradient(rgba(0,201,167,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,201,167,0.04) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;z-index:0;}
+.bg-scan{position:fixed;top:0;left:0;width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  animation:scan 4s linear infinite;z-index:0;opacity:0.4;}
+@keyframes scan{0%{top:-2px}100%{top:100vh}}
+
+/* Oscilloscope waveform decoration */
+.wave-deco{position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;opacity:0.06;}
+
+main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 24px 80px;}
+
+/* ── HERO ── */
+.hero{padding:60px 0 40px;border-bottom:1px solid var(--border);}
+.hero-tag{font-size:11px;letter-spacing:3px;color:var(--accent);
+  text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.hero-tag::before{content:'';width:24px;height:1px;background:var(--accent);}
+.hero h1{font-size:clamp(28px,5vw,52px);font-weight:700;line-height:1.1;
+  letter-spacing:-1px;margin-bottom:8px;font-family:'Courier New',monospace;}
+.hero h1 span{color:var(--accent);}
+.hero-sub{font-size:15px;color:var(--muted);line-height:1.7;
+  max-width:560px;margin:16px 0 28px;font-family:Georgia,serif;font-style:italic;}
+.hero-metrics{display:flex;gap:32px;flex-wrap:wrap;}
+.metric{display:flex;flex-direction:column;gap:2px;}
+.metric-val{font-size:22px;font-weight:700;color:var(--accent);letter-spacing:-0.5px;}
+.metric-lbl{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+
+/* ── NAV PILLS ── */
+.nav-pills{display:flex;gap:8px;flex-wrap:wrap;padding:24px 0 8px;}
+.pill{padding:6px 16px;border-radius:20px;border:1px solid var(--border);
+  font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;
+  background:transparent;color:var(--muted);transition:all .2s;}
+.pill.active,.pill:hover{background:rgba(0,201,167,0.1);
+  border-color:var(--accent);color:var(--accent);}
+
+/* ── SECTION HEADER ── */
+.section-hdr{display:flex;align-items:center;gap:12px;margin:40px 0 20px;}
+.section-hdr h2{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+.section-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-num{font-size:11px;color:var(--accent);
+  border:1px solid var(--accent);padding:2px 8px;border-radius:3px;}
+
+/* ── PROJECT CARDS ── */
+.project-card{border:1px solid var(--border);border-radius:8px;
+  background:var(--card-bg);margin-bottom:24px;overflow:hidden;
+  transition:border-color .2s,transform .15s;}
+.project-card:hover{border-color:rgba(0,201,167,0.4);transform:translateY(-2px);}
+.card-header{padding:20px 24px 0;display:flex;align-items:flex-start;
+  justify-content:space-between;gap:12px;}
+.card-accent-bar{width:4px;height:100%;min-height:80px;border-radius:4px;
+  flex-shrink:0;align-self:stretch;}
+.card-header-inner{flex:1;}
+.card-domain{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  margin-bottom:6px;}
+.card-title{font-size:17px;font-weight:700;line-height:1.3;margin-bottom:6px;}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.6;
+  font-family:Georgia,serif;}
+.card-body{padding:16px 24px;}
+.card-divider{height:1px;background:var(--border);margin:0 24px;}
+
+/* Metrics row inside card */
+.card-metrics{display:flex;gap:20px;flex-wrap:wrap;padding:12px 0;}
+.cm{display:flex;flex-direction:column;gap:2px;}
+.cm-val{font-size:16px;font-weight:700;}
+.cm-lbl{font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
+
+/* Tech stack */
+.tech-row{display:flex;gap:6px;flex-wrap:wrap;padding:12px 0 4px;}
+.tech-tag{font-size:10px;padding:3px 9px;border-radius:3px;letter-spacing:0.5px;
+  border:1px solid rgba(124,158,255,0.3);color:var(--accent3);
+  background:rgba(124,158,255,0.06);}
+.tech-tag.highlight{border-color:rgba(0,201,167,0.4);color:var(--accent);
+  background:rgba(0,201,167,0.07);}
+
+/* Findings → Fix chain */
+.chain{padding:14px 0 6px;}
+.chain-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;}
+.chain-items{display:flex;flex-direction:column;gap:0;}
+.chain-item{display:flex;gap:12px;align-items:flex-start;padding:8px 0;}
+.chain-item+.chain-item{border-top:1px solid rgba(0,201,167,0.08);}
+.chain-icon{width:26px;height:26px;border-radius:4px;display:flex;
+  align-items:center;justify-content:center;font-size:12px;
+  flex-shrink:0;margin-top:1px;}
+.chain-icon.detect{background:rgba(255,107,53,0.12);color:var(--accent2);}
+.chain-icon.analyze{background:rgba(124,158,255,0.12);color:var(--accent3);}
+.chain-icon.fix{background:rgba(0,201,167,0.12);color:var(--accent);}
+.chain-text{flex:1;}
+.chain-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:2px;}
+.chain-label.detect{color:var(--accent2);}
+.chain-label.analyze{color:var(--accent3);}
+.chain-label.fix{color:var(--accent);}
+.chain-detail{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* Result badge */
+.result-badge{display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:3px;font-size:11px;letter-spacing:0.5px;
+  margin:4px 4px 0 0;}
+.rb-green{background:rgba(0,201,167,0.1);border:1px solid rgba(0,201,167,0.3);
+  color:var(--accent);}
+.rb-orange{background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.3);
+  color:var(--accent2);}
+.rb-blue{background:rgba(124,158,255,0.1);border:1px solid rgba(124,158,255,0.3);
+  color:var(--accent3);}
+.rb-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* ── SKILLS GRID ── */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;margin-bottom:32px;}
+.skill-card{border:1px solid var(--border);border-radius:6px;
+  padding:14px 16px;background:var(--card-bg);}
+.skill-card h4{font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:10px;}
+.skill-items{display:flex;flex-direction:column;gap:6px;}
+.skill-item{display:flex;align-items:center;justify-content:space-between;
+  font-size:12px;}
+.skill-name{color:var(--text);}
+.skill-bar-wrap{width:80px;height:3px;background:rgba(255,255,255,0.08);
+  border-radius:2px;overflow:hidden;}
+.skill-bar{height:100%;border-radius:2px;background:var(--accent);}
+
+/* ── RESUME SECTION ── */
+.resume-card{border:1px solid var(--border);border-radius:8px;
+  background:var(--card-bg);padding:24px;}
+.resume-bullet{display:flex;gap:12px;padding:10px 0;
+  border-bottom:1px solid rgba(0,201,167,0.06);}
+.resume-bullet:last-child{border-bottom:none;}
+.rb-marker{width:2px;background:var(--accent);border-radius:2px;flex-shrink:0;}
+.rb-content{flex:1;}
+.rb-role{font-size:13px;font-weight:700;margin-bottom:2px;color:var(--text);}
+.rb-detail{font-size:12px;color:var(--muted);line-height:1.6;}
+
+/* ── CONTACT ── */
+.contact-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;}
+.contact-btn{padding:10px 22px;border-radius:4px;font-size:12px;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+  transition:all .2s;font-family:'Courier New',monospace;}
+.cb-primary{background:var(--accent);color:var(--navy);border:none;font-weight:700;}
+.cb-primary:hover{opacity:0.85;}
+.cb-outline{background:transparent;color:var(--accent);
+  border:1px solid var(--accent);}
+.cb-outline:hover{background:rgba(0,201,167,0.1);}
+
+/* ── OSCILLOSCOPE TRACE decoration ── */
+.osc-trace{margin:32px 0;padding:16px;border:1px solid var(--border);
+  border-radius:6px;background:rgba(0,0,0,0.2);overflow:hidden;}
+.osc-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.osc-label::before{content:'▶';font-size:7px;}
+
+/* fade in */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeUp .5s ease both;}
+.project-card:nth-child(1){animation-delay:.05s}
+.project-card:nth-child(2){animation-delay:.1s}
+.project-card:nth-child(3){animation-delay:.15s}
+.project-card:nth-child(4){animation-delay:.2s}
+</style>
+
+<div class="bg-grid"></div>
+<div class="bg-scan"></div>
+
+<svg class="wave-deco" viewBox="0 0 900 600" preserveAspectRatio="none">
+  <polyline fill="none" stroke="#00C9A7" stroke-width="1.5"
+    points="0,300 60,285 90,270 120,300 150,290 180,250 210,310 240,295 270,280 300,300 330,260 360,340 390,295 420,270 450,305 480,285 510,260 540,310 570,290 600,275 630,305 660,280 690,255 720,310 750,290 780,270 810,300 840,285 870,265 900,300"/>
+  <polyline fill="none" stroke="#FF6B35" stroke-width="0.8"
+    points="0,400 40,390 80,410 120,395 160,380 200,415 240,400 280,385 320,410 360,390 400,375 440,415 480,400 520,382 560,412 600,395 640,378 680,415 720,398 760,380 800,410 840,393 880,378 900,400"/>
+</svg>
+
+<main>
+
+<!-- ── HERO ── -->
+<div class="hero fade-in">
+  <div class="hero-tag">Signal Processing Engineer</div>
+  <h1>Sahil.<br><span>DSP Portfolio</span></h1>
+  <p class="hero-sub">
+    From raw accelerometer noise to actionable fault detection — building physics-grounded
+    signal processing pipelines that solve real industrial problems.
+  </p>
+  <div class="hero-metrics">
+    <div class="metric">
+      <span class="metric-val">4</span>
+      <span class="metric-lbl">Projects</span>
+    </div>
+    <div class="metric">
+      <span class="metric-val">100%</span>
+      <span class="metric-lbl">Cluster purity</span>
+    </div>
+    <div class="metric">
+      <span class="metric-val">97.3%</span>
+      <span class="metric-lbl">Knock detection</span>
+    </div>
+    <div class="metric">
+      <span class="metric-val">6×</span>
+      <span class="metric-lbl">DSP techniques</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<div class="nav-pills">
+  <button class="pill active" onclick="filterSection('all',this)">All projects</button>
+  <button class="pill" onclick="filterSection('fault',this)">Fault detection</button>
+  <button class="pill" onclick="filterSection('engine',this)">Engine DSP</button>
+  <button class="pill" onclick="filterSection('structural',this)">Structural</button>
+</div>
+
+<!-- ── PROJECTS ── -->
+<div class="section-hdr">
+  <span class="section-num">01</span>
+  <h2>Featured Projects</h2>
+</div>
+
+<!-- PROJECT 1: Rail Fault Detection -->
+<div class="project-card fade-in" data-category="fault">
+  <div class="card-header">
+    <div style="width:4px;border-radius:4px;background:#00C9A7;flex-shrink:0;align-self:stretch;min-height:80px;"></div>
+    <div class="card-header-inner" style="margin-left:16px;">
+      <div class="card-domain" style="color:#00C9A7;">Rail Industry · Predictive Maintenance</div>
+      <div class="card-title">Rail Vibration Fault Detection Pipeline</div>
+      <div class="card-desc">
+        End-to-end accelerometer signal pipeline classifying 4 bearing fault conditions
+        on rail wheelsets at 120 km/h. Physics-grounded signal model derived from
+        IEC 61373 and EN 15313 standards.
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-metrics">
+      <div class="cm"><span class="cm-val" style="color:#00C9A7;">100%</span><span class="cm-lbl">Cluster purity</span></div>
+      <div class="cm"><span class="cm-val" style="color:#00C9A7;">25D</span><span class="cm-lbl">Feature vector</span></div>
+      <div class="cm"><span class="cm-val" style="color:#00C9A7;">25.6 kHz</span><span class="cm-lbl">Sample rate</span></div>
+      <div class="cm"><span class="cm-val" style="color:#00C9A7;">+15 dB</span><span class="cm-lbl">SNR gain</span></div>
+    </div>
+  </div>
+  <div class="card-divider"></div>
+  <div class="card-body">
+    <div class="chain">
+      <div class="chain-title">Detection → Analysis → Result</div>
+      <div class="chain-item">
+        <div class="chain-icon detect"><i class="ti ti-radar" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label detect">Detect</div>
+          <div class="chain-detail">Kurtosis spike (K=35+) in 6–12 kHz wavelet sub-band cD3 identified bearing impact impulses — invisible in raw signal (K=2.8)</div>
+        </div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon analyze"><i class="ti ti-chart-histogram" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label analyze">Analyse</div>
+          <div class="chain-detail">FFT harmonic comb at BPFO (71.5 Hz) / BPFI (105 Hz). STFT confirmed periodic impulse bursts every 14 ms = ball pass period. Band energy 4 orders of magnitude above healthy</div>
+        </div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon fix"><i class="ti ti-check" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label fix">Result</div>
+          <div class="chain-detail">KMeans clustering (whitened, 25D) achieved 100% purity across all 4 fault classes. Wavelet db8 SURE threshold: 8–15 dB SNR improvement, kurtosis amplified 2.8 → 5.2</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:4px;">
+      <span class="result-badge rb-green"><span class="rb-dot"></span>BPFO/BPFI isolated</span>
+      <span class="result-badge rb-green"><span class="rb-dot"></span>100% fault classification</span>
+      <span class="result-badge rb-blue"><span class="rb-dot"></span>K = 2.8 → 5.2 after wavelet</span>
+    </div>
+    <div class="tech-row">
+      <span class="tech-tag highlight">Wavelet DWT db8</span>
+      <span class="tech-tag highlight">FFT / STFT</span>
+      <span class="tech-tag">Kurtosis</span>
+      <span class="tech-tag">KMeans clustering</span>
+      <span class="tech-tag">SURE threshold</span>
+      <span class="tech-tag">Python / SciPy</span>
+      <span class="tech-tag">PyWavelets</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 2: Engine Knock Detection -->
+<div class="project-card fade-in" data-category="engine">
+  <div class="card-header">
+    <div style="width:4px;border-radius:4px;background:#FF6B35;flex-shrink:0;align-self:stretch;min-height:80px;"></div>
+    <div class="card-header-inner" style="margin-left:16px;">
+      <div class="card-domain" style="color:#FF6B35;">Powertrain · Engine Control Systems</div>
+      <div class="card-title">Engine Knock Detection &amp; Correction Pipeline</div>
+      <div class="card-desc">
+        Real-time knock detection replicating Bosch KS4 / AURIX TC397 production ECU
+        architecture. Adaptive BGL threshold with closed-loop spark retard correction.
+        Draper cylindrical cavity resonance model for 86mm bore 4-cylinder engine.
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-metrics">
+      <div class="cm"><span class="cm-val" style="color:#FF6B35;">97.3%</span><span class="cm-lbl">Detection rate</span></div>
+      <div class="cm"><span class="cm-val" style="color:#FF6B35;">0.8%</span><span class="cm-lbl">False alarm</span></div>
+      <div class="cm"><span class="cm-val" style="color:#FF6B35;">55.5%</span><span class="cm-lbl">KI reduction</span></div>
+      <div class="cm"><span class="cm-val" style="color:#FF6B35;">6133 Hz</span><span class="cm-lbl">Mode(1,0)</span></div>
+    </div>
+  </div>
+  <div class="card-divider"></div>
+  <div class="card-body">
+    <div class="chain">
+      <div class="chain-title">Detection → Analysis → Correction</div>
+      <div class="chain-item">
+        <div class="chain-icon detect"><i class="ti ti-flame" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label detect">Detect</div>
+          <div class="chain-detail">Bandpass IIR (5–8.5 kHz) + asymmetric BGL adaptive threshold (Bosch EP1936346B1). Crank-angle gating limits processing to TDC → +90° ATDC window. Kurtosis reached 35.8 at 3600 RPM peak knock</div>
+        </div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon analyze"><i class="ti ti-wave-sine" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label analyze">Analyse</div>
+          <div class="chain-detail">STFT confirmed periodic bright stripes at 6133 Hz (knock ring-down bursts). FFT showed Mode(1,0) peak 20 dB above noise floor at 3400–4000 RPM. DWT cD3 kurtosis used as secondary severity flag</div>
+        </div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon fix"><i class="ti ti-adjustments" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label fix">Corrected</div>
+          <div class="chain-detail">FxLMS spark retard controller: 3°/event retard, 0.75°/cycle recovery. Max retard 18° at 4600 RPM. Knock severity reduced 0.85 → 0.38. KI reduced 55.5%. Torque penalty ~4% vs engine damage without correction</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:4px;">
+      <span class="result-badge rb-orange"><span class="rb-dot"></span>Knock at 3200–4400 RPM</span>
+      <span class="result-badge rb-green"><span class="rb-dot"></span>55.5% KI reduction</span>
+      <span class="result-badge rb-green"><span class="rb-dot"></span>18° max retard applied</span>
+    </div>
+    <div class="tech-row">
+      <span class="tech-tag highlight">Adaptive BGL threshold</span>
+      <span class="tech-tag highlight">Bandpass IIR</span>
+      <span class="tech-tag">Draper resonance model</span>
+      <span class="tech-tag">STFT spectrogram</span>
+      <span class="tech-tag">FxLMS controller</span>
+      <span class="tech-tag">Crank-angle gating</span>
+      <span class="tech-tag">Python / SciPy</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 3: Engine Vibration NVH -->
+<div class="project-card fade-in" data-category="engine">
+  <div class="card-header">
+    <div style="width:4px;border-radius:4px;background:#7C9EFF;flex-shrink:0;align-self:stretch;min-height:80px;"></div>
+    <div class="card-header-inner" style="margin-left:16px;">
+      <div class="card-domain" style="color:#7C9EFF;">NVH Engineering · Powertrain Dynamics</div>
+      <div class="card-title">Engine Vibration Measurement &amp; Reduction</div>
+      <div class="card-desc">
+        Full NVH analysis pipeline: Computed Order Tracking, Operational Modal Analysis
+        (SSI), Transfer Path Analysis, and Active Engine Mount (FxLMS) simulation.
+        Modelled on AVL / LMS / Brüel &amp; Kjær production workflows.
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-metrics">
+      <div class="cm"><span class="cm-val" style="color:#7C9EFF;">–16 dB</span><span class="cm-lbl">NVH reduction</span></div>
+      <div class="cm"><span class="cm-val" style="color:#7C9EFF;">98.7%</span><span class="cm-lbl">TPA accuracy</span></div>
+      <div class="cm"><span class="cm-val" style="color:#7C9EFF;">–65 dB</span><span class="cm-lbl">Order leakage</span></div>
+      <div class="cm"><span class="cm-val" style="color:#7C9EFF;">5 modes</span><span class="cm-lbl">OMA identified</span></div>
+    </div>
+  </div>
+  <div class="card-divider"></div>
+  <div class="card-body">
+    <div class="chain">
+      <div class="chain-title">Measure → Identify → Reduce</div>
+      <div class="chain-item">
+        <div class="chain-icon detect"><i class="ti ti-activity" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label detect">Measure</div>
+          <div class="chain-detail">Computed Order Tracking (crank-angle resampling, Hann window) resolved engine orders to 0.1E resolution across 800–6500 RPM sweep with &lt;–65 dB spectral leakage</div>
+        </div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon analyze"><i class="ti ti-topology-star" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label analyze">Identify</div>
+          <div class="chain-detail">OMA via Stochastic Subspace Identification: 5 modes at 314–1143 Hz, MAC diagonal &gt;0.95. TPA across 4 structure-borne + 1 airborne path — front mount X-axis = 48% of seat vibration</div>
+        </div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon fix"><i class="ti ti-adjustments-horizontal" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label fix">Reduce</div>
+          <div class="chain-detail">FxLMS Active Engine Mount simulation: convergence &lt;2 rev at steady speed. –14 dB at 2E, –11 dB at 4E. Combined passive + active: seat track vibration 1.61g → 0.28g RMS</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:4px;">
+      <span class="result-badge rb-blue"><span class="rb-dot"></span>Mode 3 at 694 Hz = critical</span>
+      <span class="result-badge rb-green"><span class="rb-dot"></span>1.61g → 0.28g RMS</span>
+      <span class="result-badge rb-green"><span class="rb-dot"></span>–16 dB overall NVH</span>
+    </div>
+    <div class="tech-row">
+      <span class="tech-tag highlight">Order tracking (COT)</span>
+      <span class="tech-tag highlight">OMA / SSI</span>
+      <span class="tech-tag">Transfer path analysis</span>
+      <span class="tech-tag">FxLMS active control</span>
+      <span class="tech-tag">MAC criterion</span>
+      <span class="tech-tag">Welch PSD</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 4: EGT Bracket Fatigue -->
+<div class="project-card fade-in" data-category="structural">
+  <div class="card-header">
+    <div style="width:4px;border-radius:4px;background:#EF9F27;flex-shrink:0;align-self:stretch;min-height:80px;"></div>
+    <div class="card-header-inner" style="margin-left:16px;">
+      <div class="card-domain" style="color:#EF9F27;">Structural Durability · Exhaust Systems</div>
+      <div class="card-title">EGT Bracket Fatigue Failure — DSP + ANSYS</div>
+      <div class="card-desc">
+        Diagnosed exhaust gas temperature sensor bracket cracking using PSD road
+        excitation analysis correlated with ANSYS modal FEA. Resonance detuning
+        strategy predicted 6× fatigue life improvement.
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-metrics">
+      <div class="cm"><span class="cm-val" style="color:#EF9F27;">180 Hz</span><span class="cm-lbl">Resonance found</span></div>
+      <div class="cm"><span class="cm-val" style="color:#EF9F27;">380 Hz</span><span class="cm-lbl">Detuned to</span></div>
+      <div class="cm"><span class="cm-val" style="color:#EF9F27;">6×</span><span class="cm-lbl">Life improvement</span></div>
+      <div class="cm"><span class="cm-val" style="color:#EF9F27;">±30%</span><span class="cm-lbl">Miner's accuracy</span></div>
+    </div>
+  </div>
+  <div class="card-divider"></div>
+  <div class="card-body">
+    <div class="chain">
+      <div class="chain-title">Diagnose → Model → Fix</div>
+      <div class="chain-item">
+        <div class="chain-icon detect"><i class="ti ti-focus" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label detect">Diagnose</div>
+          <div class="chain-detail">Welch PSD of road accelerometer data identified peak excitation at 100–250 Hz on cobblestone proving ground. Bracket FRF peak at 180 Hz confirmed resonance coincidence — Q=16.7× amplification (ζ=0.03)</div>
+        </div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon analyze"><i class="ti ti-cube-3d-sphere" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label analyze">Model</div>
+          <div class="chain-detail">ANSYS modal analysis (material props at 600°C: E –15%, yield –40%). Harmonic response confirmed stress concentration at bracket root matches field crack location. Dirlik rainflow + Miner's rule → 45,000 km predicted life</div>
+        </div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon fix"><i class="ti ti-tools" aria-hidden="true"></i></div>
+        <div class="chain-text">
+          <div class="chain-label fix">Fixed</div>
+          <div class="chain-detail">Wall thickness +0.8mm + gusset at root → first mode detuned 180 → 380 Hz (outside road excitation band). Predicted life: 45,000 → 280,000 km. Alternatively: 321 SS material change or rubber-isolated mount</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:4px;">
+      <span class="result-badge rb-orange"><span class="rb-dot"></span>180 Hz resonance = root cause</span>
+      <span class="result-badge rb-green"><span class="rb-dot"></span>45k → 280k km life</span>
+      <span class="result-badge rb-blue"><span class="rb-dot"></span>Validated by FRF match</span>
+    </div>
+    <div class="tech-row">
+      <span class="tech-tag highlight">Welch PSD</span>
+      <span class="tech-tag highlight">ANSYS Modal FEA</span>
+      <span class="tech-tag">Miner's rule</span>
+      <span class="tech-tag">Dirlik rainflow</span>
+      <span class="tech-tag">Harmonic response</span>
+      <span class="tech-tag">FRF measurement</span>
+      <span class="tech-tag">nCode DesignLife</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── OSCILLOSCOPE TRACE as decoration ── -->
+<div class="osc-trace" style="margin:40px 0 0;">
+  <div class="osc-label">Live signal — healthy vs fault overlay</div>
+  <svg viewBox="0 0 860 60" style="width:100%;height:60px;">
+    <polyline fill="none" stroke="#00C9A7" stroke-width="1.2" opacity="0.7"
+      points="0,30 20,28 40,32 60,29 80,31 100,28 120,32 140,29 160,31 180,28 200,32 220,29 240,31 260,28 280,32 300,29 320,31 340,28 360,32 380,29 400,31 420,28 440,32 460,29 480,31 500,28 520,32 540,29 560,31 580,28 600,32 620,29 640,31 660,28 680,32 700,29 720,31 740,28 760,32 780,29 800,31 820,28 840,32 860,30"/>
+    <polyline fill="none" stroke="#FF6B35" stroke-width="1.2" opacity="0.6"
+      points="0,30 15,28 30,15 35,35 40,48 45,32 60,29 75,28 90,32 105,28 120,14 125,38 130,50 135,31 150,29 165,28 180,32 195,29 210,15 215,42 220,50 225,31 240,29 260,28 275,32 290,29 300,14 305,40 310,52 315,31 330,29 345,28 360,31 375,15 380,44 385,50 390,31 405,29 420,28 435,32 450,29 465,15 470,40 475,50 480,30 500,28 520,32 535,14 540,44 545,50 550,30 565,29 580,28 595,32 610,15 615,42 620,50 625,30 640,29 655,28 670,31 685,15 690,44 695,50 700,30 720,29 740,28 755,32 770,29 785,14 790,42 795,50 800,30 820,29 840,28 860,30"/>
+    <text x="6" y="12" fill="#00C9A7" font-size="8" font-family="Courier New" opacity="0.8">CH1: healthy</text>
+    <text x="6" y="24" fill="#FF6B35" font-size="8" font-family="Courier New" opacity="0.8">CH2: fault (knock impulses)</text>
+  </svg>
+</div>
+
+<!-- ── SKILLS ── -->
+<div class="section-hdr" style="margin-top:48px;">
+  <span class="section-num">02</span>
+  <h2>Technical skills</h2>
+</div>
+<div class="skills-grid">
+  <div class="skill-card">
+    <h4>Signal Processing</h4>
+    <div class="skill-items">
+      <div class="skill-item"><span class="skill-name">FFT / STFT</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:95%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Wavelet DWT/CWT</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Kurtosis / PSD</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:88%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Adaptive filtering</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
+    </div>
+  </div>
+  <div class="skill-card">
+    <h4>Fault Detection</h4>
+    <div class="skill-items">
+      <div class="skill-item"><span class="skill-name">Bearing diagnostics</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:92%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Knock detection</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Order tracking</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">ML clustering</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:78%"></div></div></div>
+    </div>
+  </div>
+  <div class="skill-card">
+    <h4>Simulation</h4>
+    <div class="skill-items">
+      <div class="skill-item"><span class="skill-name">ANSYS Modal FEA</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Harmonic response</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:72%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Fatigue / nCode</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:68%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">TPA / OMA</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div></div>
+    </div>
+  </div>
+  <div class="skill-card">
+    <h4>Tools &amp; Stack</h4>
+    <div class="skill-items">
+      <div class="skill-item"><span class="skill-name">Python / SciPy</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:95%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">NumPy / Matplotlib</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:93%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">PyWavelets</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:88%"></div></div></div>
+      <div class="skill-item"><span class="skill-name">MATLAB</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── RESUME BULLETS ── -->
+<div class="section-hdr">
+  <span class="section-num">03</span>
+  <h2>Resume bullets</h2>
+</div>
+<div class="resume-card">
+  <div class="resume-bullet">
+    <div class="rb-marker"></div>
+    <div class="rb-content">
+      <div class="rb-role">Rail Vibration Fault Detection — Python DSP Pipeline</div>
+      <div class="rb-detail">Designed 5-stage predictive maintenance pipeline (25.6 kHz, 25D feature vector) classifying 4 rail bearing fault conditions with 100% clustering purity; wavelet db8 SURE denoising improved SNR 8–15 dB and amplified kurtosis from K=2.8 to K=5.2, exceeding ISO 13379 diagnostic threshold</div>
+    </div>
+  </div>
+  <div class="resume-bullet">
+    <div class="rb-marker" style="background:#FF6B35;"></div>
+    <div class="rb-content">
+      <div class="rb-role">Engine Knock Detection &amp; Correction — Bosch KS4 Architecture</div>
+      <div class="rb-detail">Implemented crank-angle-synchronised knock pipeline (bandpass IIR 5–8.5 kHz, Mode(1,0) per Draper formula) with asymmetric Bosch BGL adaptive threshold achieving 97.3% detection at 0.8% false alarm; closed-loop FxLMS spark retard controller reduced KI by 55.5% in peak knock zone (3200–4400 RPM)</div>
+    </div>
+  </div>
+  <div class="resume-bullet">
+    <div class="rb-marker" style="background:#7C9EFF;"></div>
+    <div class="rb-content">
+      <div class="rb-role">Engine NVH — Order Tracking, OMA, Transfer Path Analysis</div>
+      <div class="rb-detail">Applied Computed Order Tracking (&lt;–65 dB leakage), SSI Operational Modal Analysis (5 modes, MAC&gt;0.95), and Transfer Path Analysis (98.7% accuracy); identified front mount X-axis as 48% of seat vibration; FxLMS active mount simulation achieved –16 dB NVH, reducing 1.61g → 0.28g RMS</div>
+    </div>
+  </div>
+  <div class="resume-bullet">
+    <div class="rb-marker" style="background:#EF9F27;"></div>
+    <div class="rb-content">
+      <div class="rb-role">EGT Bracket Fatigue — PSD Analysis + ANSYS FEA</div>
+      <div class="rb-detail">Diagnosed EGT sensor bracket cracking via Welch PSD road excitation analysis and ANSYS modal FEA (material properties at 600°C); confirmed 180 Hz resonance in 100–250 Hz road excitation band (Q=16.7×); geometry redesign detuned to 380 Hz, predicting 45,000 → 280,000 km fatigue life via Dirlik rainflow + Miner's rule</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTACT ── -->
+<div class="section-hdr" style="margin-top:48px;">
+  <span class="section-num">04</span>
+  <h2>Get in touch</h2>
+</div>
+<div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:520px;font-family:Georgia,serif;font-style:italic;">
+  Looking for internship or co-op roles in NVH engineering, powertrain DSP,
+  predictive maintenance, or signal processing R&amp;D. Open to Tier-1 suppliers
+  (Bosch, Continental, AVL) and OEM powertrain teams.
+</div>
+<div class="contact-row">
+  <a class="contact-btn cb-primary" href="mailto:you@email.com">
+    <i class="ti ti-mail" aria-hidden="true"></i> Email me
+  </a>
+  <a class="contact-btn cb-outline" href="https://github.com" target="_blank">
+    <i class="ti ti-brand-github" aria-hidden="true"></i> GitHub
+  </a>
+  <a class="contact-btn cb-outline" href="https://linkedin.com" target="_blank">
+    <i class="ti ti-brand-linkedin" aria-hidden="true"></i> LinkedIn
+  </a>
+  <button class="contact-btn cb-outline" onclick="sendPrompt('Generate a one-page PDF resume for Sahil based on all the DSP projects in this portfolio ↗')">
+    <i class="ti ti-file-cv" aria-hidden="true"></i> Generate resume ↗
+  </button>
+</div>
+
+<div style="margin-top:48px;padding-top:20px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;
+  font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;">
+  <span>Sahil · Signal Processing Portfolio</span>
+  <span style="color:var(--accent);">All pipelines run in Python ·&nbsp;&nbsp;All results reproducible</span>
+</div>
+
+</main>
+
+<script>
+function filterSection(cat, btn) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.project-card').forEach(card => {
+    const c = card.dataset.category;
+    const show = cat === 'all' || c === cat;
+    card.style.display = show ? 'block' : 'none';
+  });
+}
+</script>
